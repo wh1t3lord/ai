@@ -9,7 +9,7 @@ Follow these steps in following order:
 
 1) git clone https://github.com/wh1t3lord/ai.git
 2) pip install requirements.txt
-3) now you can choose any demo that you want to see
+3) now choose demo and run using main.py files that store in each top level subfolders
 
 ## Overview
 
