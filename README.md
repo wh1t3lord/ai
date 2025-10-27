@@ -31,18 +31,20 @@ Follow these steps in following order:
 
 1) Super trivial shading
 2) Loading GLTF model with phong lighting
-3) Terrain rendering from heightmap
-4) Shadowmapping
-5) Instancing
-6) Discrete geometry lods
-7) Geomorphing
-8) HLOD
-9) PBR
-10) Lightmapping
-11) Irradiance volumes
-12) Voxel cone tracing
-13) Area lights
-14) RESTIR
+3) Skybox
+4) Terrain rendering from heightmap
+5) Shadowmapping
+6) Instancing
+7) Discrete geometry lods
+8) Geomorphing
+9) HLOD
+10) PBR
+11) Lightmapping
+12) Irradiance volumes
+13) Voxel cone tracing
+14) Area lights
 15) OIT
-16) OpenPBR material system
-17) Neural shading
+16) Atmospheric scattering
+17) RESTIR
+18) OpenPBR material system
+19) Neural shading
