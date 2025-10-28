@@ -16,6 +16,10 @@ class SceneRasterTriangle(core.IScene):
 
         self.device = device
 
+        if self.device:
+            shader_name = shaders_path / 'raster_triangle' / 'shader'
+            self.shader = self.device.load_program(shader_name, ['mainVertex', 'mainPixel'])
+
     def _update(
             self
         ):
