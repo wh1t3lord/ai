@@ -17,12 +17,38 @@ class App:
         self.__init_window()
 
 
-        self.set_current_scene("triangle")
+        self.set_current_scene("empty")
 
     def __register_scenes(self):
         self.scenes = {
-            "triangle": scenes.SceneRasterTriangle()
+            "triangle": scenes.SceneRasterTriangle(),
+            "empty": scenes.SceneRasterEmpty()
         }
+
+    def __window_callback_resize(
+            self,
+            width : int,
+            height : int
+    ):
+        if self.current_scene:
+            if self.window:
+                self.current_scene.on_resize(width,height)
+
+    def __window_callback_mouse_event(
+            self,
+            event : spy.MouseEvent
+    ):
+        if self.current_scene:
+            if self.window:
+                self.current_scene.on_mouse_event(event)
+
+    def __window_callback_keyboard_event(
+            self,
+            event : spy.KeyboardEvent
+    ):
+        if self.current_scene:
+            if self.window:
+                self.current_scene.on_keyboard_event(event)
 
     def __init_window(self):
         self.window = spy.Window(
@@ -31,6 +57,11 @@ class App:
             title="",
             resizable=True
         )
+
+        if self.window:
+            self.window.on_resize = self.__window_callback_resize
+            self.window.on_mouse_event = self.__window_callback_mouse_event
+            self.window.on_keyboard_event = self.__window_callback_keyboard_event
 
         self.device = spy.Device(
             enable_debug_layers=True,
@@ -51,12 +82,18 @@ class App:
             self.current_scene = self.scenes[scene_name]
             self.current_scene.init(
                 self.device, 
+                self.window,
                 DIR_DATA_SHADERS
             )
 
     def update(self):
         if self.current_scene == None:
             return
+        
+        while not self.window.should_close():
+            self.window.process_events()
+            self.current_scene.update()
+
 
     def render(self):
         if self.current_scene == None:
@@ -83,5 +120,5 @@ if __name__ == "__main__":
 
 
     app = App()
-
+    app.update()
     app.shutdown()

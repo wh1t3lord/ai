@@ -3,7 +3,7 @@ import core
 import slangpy as spy
 from pathlib import Path
 
-class SceneRasterTriangle(core.IScene):
+class SceneRasterEmpty(core.IScene):
     def __init__(self):
         pass
 
@@ -18,27 +18,6 @@ class SceneRasterTriangle(core.IScene):
         self.device = device
 
         if self.device:
-            
-            shader_name = shaders_path / 'raster_triangle' / 'shader.slang'
-            self.program = self.device.load_program(str(shader_name), ['mainVertex', 'mainPixel'])
-            input_layout = self.device.create_input_layout(
-                input_elements=[
-                    {
-                        "semantic_name": "POSITION",
-                        "semantic_index": 0,
-                        "format": spy.Format.rg32_float,
-                    }
-                ],
-                vertex_streams=[{"stride": 8}],
-            )
-
-            self.pipeline = self.device.create_render_pipeline(
-                program=self.program,
-                input_layout=input_layout,
-                targets=[{"format": spy.Format.rgba32_float}]
-            )
-            
-
             if window:
                 self.surface = self.device.create_surface(window)
                 self.surface.configure(width=window.width,height=window.height)

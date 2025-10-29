@@ -14,10 +14,12 @@ class IScene:
     def init(
             self, 
             device : spy.Device, 
+            window : spy.Window,
             shaders_path : Path
         ):
         self._init(
             device, 
+            window,
             shaders_path
         )
 
@@ -29,3 +31,22 @@ class IScene:
 
     def shutdown(self):
         self._shutdown()
+
+    def on_resize(
+            self, 
+            width : int, 
+            height : int
+        ):
+        self._on_resize(width,height)
+
+    def on_mouse_event(
+            self,
+            event : spy.MouseEvent
+        ):
+        self._on_mouse_event(event)
+
+    def on_keyboard_event(
+            self,
+            event : spy.KeyboardEvent
+        ):
+        self._on_keyboard_event(event)
