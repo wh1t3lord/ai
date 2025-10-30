@@ -7,15 +7,24 @@ DIR_ROOT = Path(__file__).parent.parent
 DIR_DATA = DIR_ROOT / 'data'
 DIR_DATA_SHADERS = DIR_DATA / 'shaders'
 
+app = None
+
+def ui_callback_combobox_scenes(index : int) -> None:
+    if app:
+        scene_name = list(app.scenes.keys())[index]
+        print(f'switched scene {app.current_scene_name} to {scene_name}')
+        app.set_current_scene(scene_name)
+
 class App:
     def __init__(self):
         self.current_scene : scenes.IScene = None
 
+        self.current_scene_name = 'empty'
         self.__register_scenes()
         self.__init()
 
 
-        self.set_current_scene("empty")
+        self.set_current_scene(self.current_scene_name)
 
     def __register_scenes(self):
         self.scenes = {
@@ -81,6 +90,14 @@ class App:
             if self.ui:
                 self.ui_window = spy.ui.Window(self.ui.screen, "Scenes", size=spy.float2(self.window.width*0.25, self.window.height*0.25))
                 self.ui_window_text_current_scene_name = spy.ui.Text(self.ui_window, '')
+                keys_to_list = list(self.scenes.keys())
+                self.ui_window_combobox_scenes = spy.ui.ComboBox(
+                    self.ui_window,
+                    'scenes', 
+                    keys_to_list.index(self.current_scene_name), 
+                    ui_callback_combobox_scenes, 
+                    keys_to_list
+                )
 
     def set_current_scene(self, scene_name : str):
         if not scene_name:
@@ -92,8 +109,10 @@ class App:
         if scene_name in self.scenes:
             if self.current_scene:
                 self.current_scene.shutdown()
+                print(f'destroyed scene -> {self.current_scene.__class__.__name__}')
 
             self.current_scene = self.scenes[scene_name]
+            self.current_scene_name = scene_name
             self.current_scene.init(
                 self.device, 
                 self.window,
@@ -101,8 +120,9 @@ class App:
                 DIR_DATA_SHADERS
             )
 
-            if self.ui_window_text_current_scene_name:
-                self.ui_window_text_current_scene_name.text = f'current scene: {self.__class__.__name__}'
+            print(f'initialized scene -> {self.current_scene.__class__.__name__}')
+
+            self.ui_window_text_current_scene_name.text = f'current scene: {self.current_scene.__class__.__name__}'
 
     def update(self):
         if self.current_scene == None:
@@ -110,6 +130,7 @@ class App:
         
         while not self.window.should_close():
             self.window.process_events()
+            self.ui.process_events()
             self.current_scene.update()
             self.current_scene.render()
 
@@ -131,8 +152,6 @@ if __name__ == "__main__":
     
     if not DIR_DATA_SHADERS.exists():
         raise 'failed to determine data/shaders path'
-
-
     app = App()
     app.update()
     app.shutdown()
