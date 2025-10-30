@@ -11,6 +11,7 @@ class SceneRasterTriangle(core.IScene):
             self,
             device : spy.Device, 
             window : spy.Window,
+            ui : spy.ui.Context,
             shaders_path : Path
         ):
         print(f'{self.__class__.__name__}: init called')
@@ -43,6 +44,8 @@ class SceneRasterTriangle(core.IScene):
                 self.surface = self.device.create_surface(window)
                 self.surface.configure(width=window.width,height=window.height)
 
+                self.ui = ui
+
 
 
     def _update(
@@ -59,6 +62,10 @@ class SceneRasterTriangle(core.IScene):
 
             self.device.submit_command_buffer(command_encoder.finish())
             del texture_surface
+
+            if self.ui:
+                self.ui.new_frame(width=texture_surface.width, height=texture_surface.height)
+                self.ui.render(texture=texture_surface, command_encoder=command_encoder)
 
             self.surface.present()
 

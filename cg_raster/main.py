@@ -7,14 +7,12 @@ DIR_ROOT = Path(__file__).parent.parent
 DIR_DATA = DIR_ROOT / 'data'
 DIR_DATA_SHADERS = DIR_DATA / 'shaders'
 
-g_app_close = False
-
 class App:
     def __init__(self):
         self.current_scene : scenes.IScene = None
 
         self.__register_scenes()
-        self.__init_window()
+        self.__init()
 
 
         self.set_current_scene("empty")
@@ -38,6 +36,10 @@ class App:
             self,
             event : spy.MouseEvent
     ):
+        if self.ui:
+            if self.ui.handle_mouse_event(event):
+                return
+
         if self.current_scene:
             if self.window:
                 self.current_scene.on_mouse_event(event)
@@ -46,11 +48,15 @@ class App:
             self,
             event : spy.KeyboardEvent
     ):
+        if self.ui:
+            if self.ui.handle_keyboard_event(event):
+                return
+
         if self.current_scene:
             if self.window:
                 self.current_scene.on_keyboard_event(event)
 
-    def __init_window(self):
+    def __init(self):
         self.window = spy.Window(
             width=640,
             height=480,
@@ -68,6 +74,14 @@ class App:
             type=spy.DeviceType.vulkan,
         )
 
+        self.ui = None
+        if self.device:
+            self.ui = spy.ui.Context(self.device)
+
+            if self.ui:
+                self.ui_window = spy.ui.Window(self.ui.screen, "Scenes", size=spy.float2(self.window.width*0.25, self.window.height*0.25))
+                self.ui_window_text_current_scene_name = spy.ui.Text(self.ui_window, '')
+
     def set_current_scene(self, scene_name : str):
         if not scene_name:
             return
@@ -83,8 +97,12 @@ class App:
             self.current_scene.init(
                 self.device, 
                 self.window,
+                self.ui,
                 DIR_DATA_SHADERS
             )
+
+            if self.ui_window_text_current_scene_name:
+                self.ui_window_text_current_scene_name.text = f'current scene: {self.__class__.__name__}'
 
     def update(self):
         if self.current_scene == None:
@@ -93,11 +111,7 @@ class App:
         while not self.window.should_close():
             self.window.process_events()
             self.current_scene.update()
-
-
-    def render(self):
-        if self.current_scene == None:
-            return
+            self.current_scene.render()
 
     def shutdown(self):
         if self.current_scene == None:

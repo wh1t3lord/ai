@@ -11,12 +11,13 @@ class SceneRasterEmpty(core.IScene):
             self,
             device : spy.Device, 
             window : spy.Window,
+            ui : spy.ui.Context,
             shaders_path : Path
         ):
         print(f'{self.__class__.__name__}: init called')
 
         self.device = device
-
+        self.ui = ui
         if self.device:
             if window:
                 self.surface = self.device.create_surface(window)
@@ -36,6 +37,8 @@ class SceneRasterEmpty(core.IScene):
             
             command_encoder.clear_texture_float(texture_surface, clear_value=[0,1,0,1])
 
+            self.ui.new_frame(texture_surface.width, texture_surface.height)
+            self.ui.render(texture=texture_surface, command_encoder=command_encoder)
             self.device.submit_command_buffer(command_encoder.finish())
             del texture_surface
 
