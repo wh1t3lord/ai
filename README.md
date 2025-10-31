@@ -51,3 +51,8 @@ Follow these steps in following order:
 20) RESTIR
 21) OpenPBR material system
 22) Neural shading
+
+## Contacts
+
+Discord: [@wh1t3lord](https://discord.gg/h89dyGQFnN)
+Twitter: [@wh1t3lord](https://twitter.com/wh1t3lord)
