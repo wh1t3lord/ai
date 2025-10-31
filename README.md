@@ -55,4 +55,5 @@ Follow these steps in following order:
 ## Contacts
 
 Discord: [@wh1t3lord](https://discord.gg/h89dyGQFnN)
+
 Twitter: [@wh1t3lord](https://twitter.com/wh1t3lord)
