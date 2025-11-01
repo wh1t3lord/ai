@@ -41,8 +41,8 @@ class SceneRasterTriangle(core.IScene):
             
 
             if window:
-                self.surface = self.device.create_surface(window)
-                self.surface.configure(width=window.width,height=window.height)
+                self.swapchain = self.device.create_surface(window)
+                self.swapchain.configure(width=window.width,height=window.height)
 
                 self.ui = ui
 
@@ -51,23 +51,23 @@ class SceneRasterTriangle(core.IScene):
     def _update(
             self
         ):
-        if self.device and self.surface:
+        if self.device and self.swapchain:
             command_encoder : spy.CommandEncoder = self.device.create_command_encoder()
-            texture_surface : spy.Texture = self.surface.acquire_next_image()
+            texture_surface : spy.Texture = self.swapchain.acquire_next_image()
 
             if not texture_surface:
                 return
             
             command_encoder.clear_texture_float(texture_surface, clear_value=[0,1,0,1])
 
-            self.device.submit_command_buffer(command_encoder.finish())
-            del texture_surface
-
             if self.ui:
                 self.ui.new_frame(width=texture_surface.width, height=texture_surface.height)
                 self.ui.render(texture=texture_surface, command_encoder=command_encoder)
 
-            self.surface.present()
+            self.device.submit_command_buffer(command_encoder.finish())
+            del texture_surface
+
+            self.swapchain.present()
 
     def _render(
             self
@@ -77,7 +77,10 @@ class SceneRasterTriangle(core.IScene):
     def _shutdown(
             self
         ):
-       print(f'{self.__class__.__name__}: shutdown called')
+       if self.device:
+           self.device.wait()
+           self.swapchain.unconfigure()
+           del self.swapchain
 
     def _on_resize(
             self,
@@ -88,9 +91,9 @@ class SceneRasterTriangle(core.IScene):
             self.device.wait()
 
         if width > 0 and height > 0:
-            self.surface.configure(width=width,height=height)
+            self.swapchain.configure(width=width,height=height)
         else:
-            self.surface.unconfigure()
+            self.swapchain.unconfigure()
 
     def _on_mouse_event(
             self,

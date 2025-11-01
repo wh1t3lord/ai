@@ -12,13 +12,12 @@ app = None
 def ui_callback_combobox_scenes(index : int) -> None:
     if app:
         scene_name = list(app.scenes.keys())[index]
-        print(f'switched scene {app.current_scene_name} to {scene_name}')
-        app.set_current_scene(scene_name)
+        app.switch_scene(scene_name)
 
 class App:
     def __init__(self):
         self.current_scene : scenes.IScene = None
-
+        self.is_need_to_switch_scenes : bool = False
         self.current_scene_name = 'empty'
         self.__register_scenes()
         self.__init()
@@ -107,10 +106,6 @@ class App:
             return
         
         if scene_name in self.scenes:
-            if self.current_scene:
-                self.current_scene.shutdown()
-                print(f'destroyed scene -> {self.current_scene.__class__.__name__}')
-
             self.current_scene = self.scenes[scene_name]
             self.current_scene_name = scene_name
             self.current_scene.init(
@@ -124,6 +119,12 @@ class App:
 
             self.ui_window_text_current_scene_name.text = f'current scene: {self.current_scene.__class__.__name__}'
 
+    def switch_scene(self, scene_name : str):
+        self.is_need_to_switch_scenes = True
+        print(f'switching scene {self.current_scene_name} to {scene_name}')
+        self.current_scene_name = scene_name
+
+
     def update(self):
         if self.current_scene == None:
             return
@@ -131,6 +132,18 @@ class App:
         while not self.window.should_close():
             self.window.process_events()
             self.ui.process_events()
+
+            if self.is_need_to_switch_scenes:
+                if self.current_scene:
+                    self.current_scene.shutdown()
+                    print(f'destroyed scene -> {self.current_scene.__class__.__name__}')
+
+                self.set_current_scene(self.current_scene_name)
+                self.is_need_to_switch_scenes = False
+                print('scene switched!')
+
+
+            
             self.current_scene.update()
             self.current_scene.render()
 

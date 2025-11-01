@@ -20,17 +20,17 @@ class SceneRasterEmpty(core.IScene):
         self.ui = ui
         if self.device:
             if window:
-                self.surface = self.device.create_surface(window)
-                self.surface.configure(width=window.width,height=window.height)
+                self.swapchain = self.device.create_surface(window)
+                self.swapchain.configure(width=window.width,height=window.height)
 
 
 
     def _update(
             self
         ):
-        if self.device and self.surface:
+        if self.device and self.swapchain:
             command_encoder : spy.CommandEncoder = self.device.create_command_encoder()
-            texture_surface : spy.Texture = self.surface.acquire_next_image()
+            texture_surface : spy.Texture = self.swapchain.acquire_next_image()
 
             if not texture_surface:
                 return
@@ -42,7 +42,7 @@ class SceneRasterEmpty(core.IScene):
             self.device.submit_command_buffer(command_encoder.finish())
             del texture_surface
 
-            self.surface.present()
+            self.swapchain.present()
 
     def _render(
             self
@@ -52,7 +52,13 @@ class SceneRasterEmpty(core.IScene):
     def _shutdown(
             self
         ):
-       print(f'{self.__class__.__name__}: shutdown called')
+        if self.device:
+           self.device.wait()
+           self.swapchain.unconfigure()
+           del self.swapchain
+
+        print(f'{self.__class__.__name__}: resources are destroyed!')
+
 
     def _on_resize(
             self,
@@ -63,9 +69,9 @@ class SceneRasterEmpty(core.IScene):
             self.device.wait()
 
         if width > 0 and height > 0:
-            self.surface.configure(width=width,height=height)
+            self.swapchain.configure(width=width,height=height)
         else:
-            self.surface.unconfigure()
+            self.swapchain.unconfigure()
 
     def _on_mouse_event(
             self,
