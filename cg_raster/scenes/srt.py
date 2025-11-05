@@ -51,6 +51,11 @@ class SceneRasterTriangle(core.IScene):
     def _update(
             self
         ):
+        pass
+
+    def _render(
+            self
+        ):
         if self.device and self.swapchain:
             command_encoder : spy.CommandEncoder = self.device.create_command_encoder()
             texture_surface : spy.Texture = self.swapchain.acquire_next_image()
@@ -64,15 +69,14 @@ class SceneRasterTriangle(core.IScene):
                 self.ui.new_frame(width=texture_surface.width, height=texture_surface.height)
                 self.ui.render(texture=texture_surface, command_encoder=command_encoder)
 
+            # drawing our triangle
+
+            
+
             self.device.submit_command_buffer(command_encoder.finish())
             del texture_surface
 
             self.swapchain.present()
-
-    def _render(
-            self
-        ):
-        pass
 
     def _shutdown(
             self

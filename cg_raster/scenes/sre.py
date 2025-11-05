@@ -28,6 +28,11 @@ class SceneRasterEmpty(core.IScene):
     def _update(
             self
         ):
+        pass
+
+    def _render(
+            self
+        ):
         if self.device and self.swapchain:
             command_encoder : spy.CommandEncoder = self.device.create_command_encoder()
             texture_surface : spy.Texture = self.swapchain.acquire_next_image()
@@ -43,11 +48,6 @@ class SceneRasterEmpty(core.IScene):
             del texture_surface
 
             self.swapchain.present()
-
-    def _render(
-            self
-        ):
-        pass
 
     def _shutdown(
             self

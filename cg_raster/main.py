@@ -67,6 +67,7 @@ class App:
             if index < len(key_list) - 1:
                 scene_name = key_list[index+1]
                 self.switch_scene(scene_name)
+                self.ui_window_combobox_scenes.value = index + 1
 
         if event.is_key_press() and event.key == spy.KeyCode.left:
             key_list = list(self.scenes.keys())
@@ -75,6 +76,7 @@ class App:
             if index > 0:
                 scene_name = key_list[index-1]
                 self.switch_scene(scene_name)
+                self.ui_window_combobox_scenes.value = index - 1
 
         if self.current_scene:
             if self.window:
