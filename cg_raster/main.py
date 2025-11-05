@@ -60,6 +60,22 @@ class App:
             if self.ui.handle_keyboard_event(event):
                 return
 
+        if event.is_key_press() and event.key == spy.KeyCode.right:
+            key_list = list(self.scenes.keys())
+            index = key_list.index(self.current_scene_name)
+
+            if index < len(key_list) - 1:
+                scene_name = key_list[index+1]
+                self.switch_scene(scene_name)
+
+        if event.is_key_press() and event.key == spy.KeyCode.left:
+            key_list = list(self.scenes.keys())
+            index = key_list.index(self.current_scene_name)
+
+            if index > 0:
+                scene_name = key_list[index-1]
+                self.switch_scene(scene_name)
+
         if self.current_scene:
             if self.window:
                 self.current_scene.on_keyboard_event(event)
