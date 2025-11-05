@@ -71,7 +71,17 @@ class SceneRasterTriangle(core.IScene):
 
             # drawing our triangle
 
-            
+            render_target_view = texture_surface.create_view({})
+
+            with command_encoder.begin_render_pass(
+                {
+                    "color_attachments": [
+                        {"view": render_target_view}
+                    ]
+                }) as rp:
+                rp.bind_pipeline(self.pipeline)
+                
+                
 
             self.device.submit_command_buffer(command_encoder.finish())
             del texture_surface
