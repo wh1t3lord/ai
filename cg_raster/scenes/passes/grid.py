@@ -7,7 +7,7 @@ class GridPass:
     def __init__(self):
         pass
 
-    def init():
+    def init(device : spy.Device):
         pass
 
     def render():

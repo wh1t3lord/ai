@@ -9,6 +9,8 @@ DIR_DATA_SHADERS = DIR_DATA / 'shaders'
 
 app = None
 
+# not good but better to use local private method from class and call it from lambda
+# todo: refactor pls
 def ui_callback_combobox_scenes(index : int) -> None:
     if app:
         scene_name = list(app.scenes.keys())[index]
@@ -27,8 +29,8 @@ class App:
 
     def __register_scenes(self):
         self.scenes = {
-            "triangle": scenes.SceneRasterTriangle(),
-            "empty": scenes.SceneRasterEmpty()
+            "empty": scenes.SceneRasterEmpty(),
+            "triangle": scenes.SceneRasterTriangle()
         }
 
     def __window_callback_resize(
@@ -116,6 +118,8 @@ class App:
                     keys_to_list
                 )
 
+                self.ui_text_navigation = spy.ui.Text(self.ui_window, 'For switching scenes you can use:\n\t1) <- or -> (on your keyboard)\n\t2) combobox\n\nDescription:\n')
+
     def set_current_scene(self, scene_name : str):
         if not scene_name:
             return
@@ -130,6 +134,7 @@ class App:
                 self.device, 
                 self.window,
                 self.ui,
+                self.ui_window,
                 DIR_DATA_SHADERS
             )
 

@@ -16,12 +16,14 @@ class IScene:
             device : spy.Device, 
             window : spy.Window,
             ui : spy.ui.Context,
+            ui_main_window : spy.ui.Window,
             shaders_path : Path
         ):
         self._init(
             device, 
             window,
             ui,
+            ui_main_window,
             shaders_path
         )
 
