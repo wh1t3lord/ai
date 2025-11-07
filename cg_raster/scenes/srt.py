@@ -1,7 +1,8 @@
 import core
-
+import random
 import slangpy as spy
 from pathlib import Path
+import numpy as np
 
 class SceneRasterTriangle(core.IScene):
     def __init__(self):
@@ -20,8 +21,7 @@ class SceneRasterTriangle(core.IScene):
         self.device = device
 
         if self.device:
-            
-            shader_name = shaders_path / 'raster_triangle' / 'shader.slang'
+            shader_name = shaders_path / 'raster_triangle' / '2d.slang'
             self.program = self.device.load_program(str(shader_name), ['mainVertex', 'mainPixel'])
             input_layout = self.device.create_input_layout(
                 input_elements=[
@@ -38,6 +38,28 @@ class SceneRasterTriangle(core.IScene):
                 program=self.program,
                 input_layout=input_layout,
                 targets=[{"format": spy.Format.rgba32_float}]
+            )
+
+            vertices = np.array(
+                [-1, -1, 1, -1, 0, 1], 
+                dtype=np.float32
+            )
+            
+            indices = np.array(
+                [0, 1, 2], 
+                dtype=np.uint32
+            )
+
+            self.vertex_buffer = device.create_buffer(
+                usage=spy.BufferUsage.vertex_buffer,
+                label="vertex_buffer",
+                data=vertices,
+            )
+
+            self.index_buffer = device.create_buffer(
+                usage=spy.BufferUsage.index_buffer,
+                label="index_buffer",
+                data=indices,
             )
             
 
@@ -64,16 +86,11 @@ class SceneRasterTriangle(core.IScene):
             if not texture_surface:
                 return
             
-            command_encoder.clear_texture_float(texture_surface, clear_value=[0,1,0,1])
-
-            if self.ui:
-                self.ui.new_frame(width=texture_surface.width, height=texture_surface.height)
-                self.ui.render(texture=texture_surface, command_encoder=command_encoder)
-
             # drawing our triangle
 
             render_target_view = texture_surface.create_view({})
-
+            command_encoder.clear_texture_float(texture_surface, clear_value=[0,0,0,1])
+                
             with command_encoder.begin_render_pass(
                 {
                     "color_attachments": [
@@ -81,8 +98,24 @@ class SceneRasterTriangle(core.IScene):
                     ]
                 }) as rp:
                 rp.bind_pipeline(self.pipeline)
-                
-                
+                rp.set_render_state(
+                        {
+                            "viewports": [spy.Viewport.from_size(texture_surface.width, texture_surface.height)],
+                            "scissor_rects": [
+                                spy.ScissorRect.from_size(texture_surface.width, texture_surface.height)
+                            ],
+                            "vertex_buffers": [self.vertex_buffer],
+                            "index_buffer": self.index_buffer,
+                            "index_format": spy.IndexFormat.uint32,
+                        }
+                    )
+                rp.draw({"vertex_count": 3})
+
+            # end of drawing our triangle
+
+            if self.ui:
+                self.ui.new_frame(width=texture_surface.width, height=texture_surface.height)
+                self.ui.render(texture=texture_surface, command_encoder=command_encoder)
 
             self.device.submit_command_buffer(command_encoder.finish())
             del texture_surface
@@ -92,10 +125,15 @@ class SceneRasterTriangle(core.IScene):
     def _shutdown(
             self
         ):
+       # we should destroy our resources
        if self.device:
+           # sync point between GPU execution (wait until all operations on GPU is completed and we are ready to proceed) and CPU
            self.device.wait()
            self.swapchain.unconfigure()
+
            del self.swapchain
+           del self.vertex_buffer
+           del self.index_buffer
 
     def _on_resize(
             self,

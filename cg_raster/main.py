@@ -30,7 +30,7 @@ class App:
     def __register_scenes(self):
         self.scenes = {
             "empty": scenes.SceneRasterEmpty(),
-            "triangle": scenes.SceneRasterTriangle()
+            "2d - triangle": scenes.SceneRasterTriangle()
         }
 
     def __window_callback_resize(
