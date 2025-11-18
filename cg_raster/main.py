@@ -31,7 +31,8 @@ class App:
         self.scenes = {
             "empty": scenes.SceneRasterEmpty(),
             "2d - triangle": scenes.SceneRasterTriangle(),
-            "2d - triangle with color": scenes.SceneRasterTriangleColor()
+            "2d - triangle with color": scenes.SceneRasterTriangleColor(),
+            "2d - color triangle with camera": scenes.SceneRasterTriangleCamera()
         }
 
     def __window_callback_resize(
@@ -108,7 +109,12 @@ class App:
             self.ui = spy.ui.Context(self.device)
 
             if self.ui:
-                self.ui_window = spy.ui.Window(self.ui.screen, "Scenes", size=spy.float2(self.window.width*0.25, self.window.height*0.25))
+                self.ui_window = spy.ui.Window(
+                    self.ui.screen, 
+                    "Scenes", 
+                    size=spy.float2(self.window.width*0.25, self.window.height*0.25)
+                )
+                
                 self.ui_window_text_current_scene_name = spy.ui.Text(self.ui_window, '')
                 keys_to_list = list(self.scenes.keys())
                 self.ui_window_combobox_scenes = spy.ui.ComboBox(
