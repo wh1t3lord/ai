@@ -2,6 +2,8 @@ from enum import Enum
 import slangpy as spy
 from pathlib import Path
 
+from camera import Camera
+
 class RenderingType(Enum):
     FORWARD = 0
     DEFERRED = 1
