@@ -1,4 +1,6 @@
-This is my practice related to AI & Computer Graphics as my demos related to my domain of interests. 
+This is my practice related to AI & Computer Graphics. This repository is for educational purposes only. 
+
+> Also I always wanted to make a tutorial/blog about computer graphics and hope this material will be complimentary for those who use slangpy.
 
 ## Usage
 
@@ -9,7 +11,7 @@ Follow these steps in following order:
 
 1) git clone https://github.com/wh1t3lord/ai.git
 2) pip install requirements.txt
-3) now choose demo and run using main.py files that store in each top level subfolders
+3) now choose demo and run using main.py files that store in each top level subfolders (cg_raster; cg_rtx; cg_neural)
 
 ## Overview
 
