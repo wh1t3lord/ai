@@ -21,7 +21,7 @@ class SceneRasterTriangleColor(core.IScene):
         self.device = device
 
         if self.device:
-            shader_name = shaders_path / 'raster_triangle' / '2d.slang'
+            shader_name = shaders_path / 'raster_triangle' / '2d_color.slang'
             self.program = self.device.load_program(str(shader_name), ['mainVertex', 'mainPixel'])
             input_layout = self.device.create_input_layout(
                 input_elements=[
@@ -44,11 +44,13 @@ class SceneRasterTriangleColor(core.IScene):
                 [-1, -1, 1, -1, 0, 1], 
                 dtype=np.float32
             )
-            
+
             indices = np.array(
                 [0, 1, 2], 
                 dtype=np.uint32
             )
+
+            self.shader_data_triangle_color = np.array([1,1,1], dtype=np.float32)
 
             self.vertex_buffer = device.create_buffer(
                 usage=spy.BufferUsage.vertex_buffer,
@@ -68,6 +70,19 @@ class SceneRasterTriangleColor(core.IScene):
                 self.swapchain.configure(width=window.width,height=window.height)
 
                 self.ui = ui
+
+                if ui_main_window:
+                    self.ui_shader_data_triangle_color = spy.ui.DragFloat3(
+                        ui_main_window,
+                        'triangle color',
+                        self.shader_data_triangle_color,
+                        lambda value: setattr(self, 'shader_data_triangle_color', value),
+                        0.01,
+                        0.0,
+                        1.0
+                    )
+
+                    self.ui_main_window = ui_main_window
 
 
 
@@ -97,7 +112,10 @@ class SceneRasterTriangleColor(core.IScene):
                         {"view": render_target_view}
                     ]
                 }) as rp:
-                rp.bind_pipeline(self.pipeline)
+                shader_object = rp.bind_pipeline(self.pipeline)
+                cursor = spy.ShaderCursor(shader_object)
+                cursor.g_TriangleColor = self.shader_data_triangle_color
+
                 rp.set_render_state(
                         {
                             "viewports": [spy.Viewport.from_size(texture_surface.width, texture_surface.height)],
@@ -134,6 +152,9 @@ class SceneRasterTriangleColor(core.IScene):
            del self.swapchain
            del self.vertex_buffer
            del self.index_buffer
+
+       if self.ui_main_window:
+           self.ui_main_window.remove_child(self.ui_shader_data_triangle_color)
 
     def _on_resize(
             self,
